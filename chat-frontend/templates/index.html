@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot Gramática</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Chatbot Gramática</h1>
+    <input type="text" id="pergunta" placeholder="Digite sua pergunta..." size="50">
+    <button onclick="fazerPergunta()">Perguntar</button>
+    <p><b>Resposta:</b> <span id="resposta"></span></p>
+
+    <script>
+        const socket = io(); // <- sem IP fixo, Render cuida disso
+
+
+        socket.on('connect', () => {
+            console.log("Conectado ao servidor WebSocket!");
+        });
+
+        socket.on('nova_mensagem', (data) => {
+            document.getElementById('resposta').textContent = data.texto;
+        });
+
+        socket.on('erro', (data) => {
+            document.getElementById('resposta').textContent = data.erro || 'Erro';
+        });
+
+        function fazerPergunta() {
+            const pergunta = document.getElementById('pergunta').value;
+            if (pergunta.trim() !== '') {
+                socket.emit('enviar_mensagem', { mensagem: pergunta });
+            }
+        }
+    </script>
+</body>
+</html>
